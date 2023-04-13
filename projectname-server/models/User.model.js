@@ -17,6 +17,7 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: [true, "Name is required."],
+      unique: true,
     },
     agencyUsed: [{type: Schema.Types.ObjectId, ref: "Agency"}]
   },
