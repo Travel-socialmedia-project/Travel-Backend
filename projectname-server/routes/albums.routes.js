@@ -23,9 +23,10 @@ router.post("/albums", (req, res, next) => {
 // .Get, get info from DB
 // 
      router.get("/albums", (req, res, next) => {
-        Album.find()
+        Album.find().sort({ createdAt: -1 })
             
             .then(albumsFromDB => {
+               
                 res.json(albumsFromDB);
             })
             .catch(e => {

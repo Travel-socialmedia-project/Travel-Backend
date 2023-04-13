@@ -24,6 +24,11 @@ const albumSchema = new Schema(
       userAccess: [{type: Schema.Types.ObjectId, ref: "User"}]
         
       },
+    //   owner: {
+    //     type:String,
+
+    //  }, 
+
   
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
