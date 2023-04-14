@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
+
 const albumSchema = new Schema(
   {
    country: {
@@ -21,17 +21,16 @@ const albumSchema = new Schema(
     description: {
         type: String,
       },
+     
+      user: { type: Schema.Types.ObjectId, ref: "User" },
+      
       userAccess: [{type: Schema.Types.ObjectId, ref: "User"}]
         
       },
-    //   owner: {
-    //     type:String,
 
-    //  }, 
-
-  
+   
   {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
+    
     timestamps: true,
   }, 
 );
