@@ -2,17 +2,18 @@ const router = require("express").Router();
 const Album = require("../models/Album.model");
 const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
+const fileUploader = require("../config/cloudinary.config");
 
-//
-// .Post, create the album
-//
-router.post("/albums", isAuthenticated , (req, res, next) => {
+
+router.post("/albums", isAuthenticated, (req, res, next) => {
+  
    const userId = req.payload._id;
- 
-  const { image, title, country, description,  city,  } = req.body;
-  Album.create({ image, title, country, description,  city, user:userId  })
-    .then((response) => res.status(201).json(response))
+  const { title, country, description,  city, useracess, image  } = req.body;
 
+  
+  Album.create({  title, country, description, image: image.imageUrl,  city, useracess:[], user:userId  })
+    .then((response) => res.status(201).json(response))
+    // .then (()=> res.json({ fileUrl: req.file.path }))
     .catch((e) => {
       console.log("error creating a new album", e);
       res.status(500).json({
@@ -22,10 +23,11 @@ router.post("/albums", isAuthenticated , (req, res, next) => {
     });
 });
 
+
 //
 // .Get, get info from DB
 //
-router.get("/albums", (req, res, next) => {
+router.get("/albums" , (req, res, next) => {
   Album.find()
    .populate({path:'user', select:["name"]})
     .sort({ createdAt: -1 })
@@ -47,6 +49,7 @@ router.get("/albums", (req, res, next) => {
 
 router.get("/albums/:albumId", (req, res, next) => {
   const { albumId } = req.params;
+ 
 
   if (!mongoose.Types.ObjectId.isValid(albumId)) {
     res.status(400).json({ message: "Specified id is not valid" });
@@ -54,6 +57,7 @@ router.get("/albums/:albumId", (req, res, next) => {
   }
 
   Album.findById(albumId)
+  .populate({path:'user', select:["name"]})
     .then((albums) => res.json(albums))
     .catch((e) => {
       console.log("error getting details of the albums", e);
@@ -64,51 +68,93 @@ router.get("/albums/:albumId", (req, res, next) => {
     });
 });
 
-//
-// .Put, update new album details
+
 //
 
-router.put("/albums/:albumId", (req, res, next) => {
+// .Put, update new album details
+router.put("/albums/:albumId", isAuthenticated, (req, res, next) => {
   const { albumId } = req.params;
+  const userId = req.payload._id;
 
   if (!mongoose.Types.ObjectId.isValid(albumId)) {
     res.status(400).json({ message: "Specified id is not valid" });
     return;
   }
 
-  Album.findByIdAndUpdate(albumId, req.body, { new: true })
-    .then((updatedAlbum) => res.json(updatedAlbum))
+  Album.findById(albumId)
+    .then((album) => {
+      if (!album) {
+        res.status(404).json({ message: "Album not found" });
+        return;
+      }
+
+      if (album.user.toString() !== userId) {
+        res.status(403).json({ message: "Access denied" });
+        return;
+      }
+
+      Album.findByIdAndUpdate(albumId, req.body, { new: true })
+        .then((updatedAlbum) => res.json(updatedAlbum))
+        .catch((e) => {
+          console.log("error updating album", e);
+          res.status(500).json({
+            message: "error updating album",
+            error: e,npm
+          });
+        });
+    })
     .catch((e) => {
-      console.log("error updating album", e);
+      console.log("error finding album", e);
       res.status(500).json({
-        message: "error updating album",
+        message: "error finding album",
         error: e,
       });
     });
 });
 
 //
-//
+// .Delete, delete an album
 //
 
-router.delete("/albums/:albumId", (req, res, next) => {
+router.delete("/albums/:albumId", isAuthenticated, (req, res, next) => {
   const { albumId } = req.params;
+  const userId = req.payload._id;
 
   if (!mongoose.Types.ObjectId.isValid(albumId)) {
     res.status(400).json({ message: "Specified id is not valid" });
     return;
   }
 
-  Album.findByIdAndRemove(albumId)
-    .then(() =>
-      res.json({
-        message: `Album with ${albumId} is removed successfully.`,
-      })
-    )
+  Album.findById(albumId)
+    .then((album) => {
+      if (!album) {
+        res.status(404).json({ message: "Album not found" });
+        return;
+      }
+
+      if (album.user.toString() !== userId) {
+        res.status(403).json({ message: "Access denied" });
+        return;
+      }
+
+      Album.findByIdAndRemove(albumId)
+        .then(() =>
+          res.json({
+            message: `Album with ${albumId} is removed successfully.`,
+          })
+        )
+        .catch((e) => {
+          console.log("error deleting album", e);
+          res.status(500).json({
+            message: "error deleting album",
+            error: e,
+          });
+        });
+    })
     .catch((e) => {
-      console.log("error deleting albums", e);
+      console.log("error finding album", e);
       res.status(500).json({
-        message: "error deleting albums",
+        message: "error finding album",
         error: e,
       });
     });

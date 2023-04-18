@@ -24,7 +24,7 @@ const albumSchema = new Schema(
      
       user: { type: Schema.Types.ObjectId, ref: "User" },
       
-      userAccess: [{type: Schema.Types.ObjectId, ref: "User"}]
+      useraccess: [{type: Schema.Types.ObjectId, ref: "User", default: []}]
         
       },
 

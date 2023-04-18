@@ -3,7 +3,10 @@ const User= require("../models/User.model")
 const mongoose = require("mongoose");
 
 
-router.get('/user/:userId', (req, res, next) => {
+
+
+
+router.get('/user/:userId/albums', (req, res, next) => {
     const { userId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid( userId)) {
@@ -11,16 +14,23 @@ router.get('/user/:userId', (req, res, next) => {
         return;
     }
 
-    User.findById( userId)
-        .then( users => res.json(users))
+    Album.find({ user: userId })
+        .then(albums => res.json(albums))
+        console.log(albums)
         .catch(e => {
-            console.log("error getting details of the albums", e);
+            console.log("error getting albums", e);
             res.status(500).json({
-                message: "error getting details of the albums",
+                message: "error getting albums",
                 error: e
             });
         })
 });
+
+
+
+
+
+
 
 
 
