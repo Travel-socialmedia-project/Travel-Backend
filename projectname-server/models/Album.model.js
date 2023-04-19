@@ -10,10 +10,10 @@ const albumSchema = new Schema(
     city: {
         type: String,
       },
-    image: {
-      type: String,
-      required: [true, "Image is required."],
-    },
+      image: {
+        type: String,
+        required: [true, "Image is required."],
+      },
     title: {
       type: String,
       required: [true, "Title is required." ],

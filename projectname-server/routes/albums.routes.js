@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Album = require("../models/Album.model");
 const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
-const fileUploader = require("../config/cloudinary.config");
+
 
 
 router.post("/albums", isAuthenticated, (req, res, next) => {
@@ -13,7 +13,7 @@ router.post("/albums", isAuthenticated, (req, res, next) => {
   
   Album.create({  title, country, description, image: image.imageUrl,  city, useracess:[], user:userId  })
     .then((response) => res.status(201).json(response))
-    // .then (()=> res.json({ fileUrl: req.file.path }))
+    
     .catch((e) => {
       console.log("error creating a new album", e);
       res.status(500).json({
@@ -159,5 +159,13 @@ router.delete("/albums/:albumId", isAuthenticated, (req, res, next) => {
       });
     });
 });
+
+
+
+
+
+
+
+
 
 module.exports = router;

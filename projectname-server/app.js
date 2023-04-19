@@ -27,8 +27,8 @@ app.use("/auth", authRoutes);
 const albumsRoutes = require ("./routes/albums.routes");
 app.use ("/api", albumsRoutes);
 
-const userRoutes = require ("./routes/user.routes");
-app.use ("/api", userRoutes);
+const myAlbumsRoutes = require ("./routes/myAlbums.routes");
+app.use ("/api", myAlbumsRoutes);
 
   const uploadRoutes = require ("./routes/upload.routes");
  app.use ("/api", uploadRoutes);
