@@ -9,12 +9,14 @@ const Agency = require("../models/Agency.model.js")
 // 
 
 router.post("/agency",isAuthenticated, (req, res, next) => {
-    const { name, website, phonenumber, logo,email } = req.body;
-    Agency.create({ name, website, phonenumber, logo,email })
+    const { name, website, phonenumber, logo, email } = req.body;
+    
+    Agency.create({ name, website, phonenumber, logo:logo.logoUrl , email })
       .then((response) => {
         console.log(response);
         res.status(201).json(response);
       })
+
       .catch((e) => {
         console.log("error creating a new agency", e);
         res.status(500).json({
@@ -24,7 +26,7 @@ router.post("/agency",isAuthenticated, (req, res, next) => {
       });
   });
   
-  router.get("/agency",isAuthenticated, (req, res, next) => {
+  router.get("/agency", (req, res, next) => {
     Agency.find()
       .populate("collections")
       .then((agencyFromDB) => {
