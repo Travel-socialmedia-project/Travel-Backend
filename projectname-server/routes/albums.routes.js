@@ -2,17 +2,21 @@ const router = require("express").Router();
 const Album = require("../models/Album.model");
 const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
+const Agency= require ("../models/Agency.model")
 
 
 
 router.post("/albums", isAuthenticated, (req, res, next) => {
   
    const userId = req.payload._id;
-  const { title, country, description,  city, useracess, image  } = req.body;
+  const { title, country, description,  city, useracess, image, agencyused  } = req.body;
 
   
-  Album.create({  title, country, description, image: image.imageUrl,  city, useracess:[], user:userId  })
-    .then((response) => res.status(201).json(response))
+  Album.create({  title, country, description, image: image.imageUrl,  city, useracess:[], user:userId, agencyused  })
+    .then((newAlbum) =>{
+      return Agency.findByIdAndUpdate(newAlbum.agencyused,{ $push:{collections:newAlbum._id}})
+      .then((response) => res.status(201).json(response)
+      )})
     
     .catch((e) => {
       console.log("error creating a new album", e);
@@ -30,6 +34,7 @@ router.post("/albums", isAuthenticated, (req, res, next) => {
 router.get("/albums" , (req, res, next) => {
   Album.find()
    .populate({path:'user', select:["name"]})
+   
     .sort({ createdAt: -1 })
    .then((albumsFromDB) => {
       res.json(albumsFromDB);
@@ -58,6 +63,7 @@ router.get("/albums/:albumId", (req, res, next) => {
 
   Album.findById(albumId)
   .populate({path:'user', select:["name"]})
+  .populate('agencyused')
     .then((albums) => res.json(albums))
     .catch((e) => {
       console.log("error getting details of the albums", e);

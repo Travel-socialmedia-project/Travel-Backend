@@ -32,6 +32,9 @@ app.use ("/api", myAlbumsRoutes);
 
   const uploadRoutes = require ("./routes/upload.routes");
  app.use ("/api", uploadRoutes);
+ 
+ const agencyRoutes = require ("./routes/agency.routes");
+ app.use ("/api", agencyRoutes);
 
 
 

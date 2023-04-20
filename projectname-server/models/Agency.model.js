@@ -1,8 +1,13 @@
 const { Schema, model } = require("mongoose");
 
 
-const agentSchema = new Schema(
+const agencySchema = new Schema(
   {
+    name:{
+      type: String,
+      required: [true, "Agency is required."],
+
+    },
     email: {
       type: String,
       required: [true, "Email is required."],
@@ -14,16 +19,24 @@ const agentSchema = new Schema(
       type: String,
       required: [true, "Website is required."],
     },
-    description: {
+    phonenumber: {
         type: String,
       },
+
+    collections: [{ type: Schema.Types.ObjectId, ref: "Album" }],
+      
+      logo: {
+    type: String, }
   },
+ 
+    
+
   {
     
     timestamps: true,
   }
 );
 
-const Agency = model("Agency", agentSchema);
+const Agency = model("Agency", agencySchema);
 
 module.exports = Agency;
